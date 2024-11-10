@@ -75,7 +75,11 @@ function readPlayer(req, res, next) {
 }
 
 function updatePlayer(req, res, next) {
-  db.oneOrNone('UPDATE Player SET email=${body.email}, name=${body.name} WHERE id=${params.id} RETURNING id', req)
+  db.oneOrNone('UPDATE Player SET email=${email}, name=${name} WHERE id=${id} RETURNING id', {
+      id: req.params.id,
+      email: req.body.email,
+      name: req.body.name
+    })
     .then((data) => returnDataOr404(res, data))
     .catch((err) => next(err));
 }
