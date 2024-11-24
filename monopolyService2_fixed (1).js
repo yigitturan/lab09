@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 /* eslint-disable no-console */
-/* eslint-disable no-use-before-define a */
+/* eslint-disable no-use-before-define */
 
 /**
  * This module implements an extended REST-inspired webservice for the Monopoly DB.
@@ -31,6 +31,7 @@
  const router = express.Router();
  router.use(express.json());
  
+ // Routes
  router.get('/', readHelloMessage);
  router.get('/players', readPlayers);
  router.get('/players/:id', readPlayer);
@@ -38,7 +39,6 @@
  router.post('/players', createPlayer);
  router.delete('/players/:id', deletePlayer);
  
- // Additional routes based on new SQL tables
  router.get('/games', readGames);
  router.get('/games/:id', readGame);
  router.get('/playergame/:id', readPlayerGameScores);
@@ -49,6 +49,7 @@
  app.use(router);
  app.listen(port, () => console.log(`Listening on port ${port}`));
  
+ // Utility function for consistent responses
  function returnDataOr404(res, data) {
    if (data == null) {
      res.sendStatus(404);
@@ -57,21 +58,28 @@
    }
  }
  
+ // Route Handlers
  function readHelloMessage(req, res) {
    res.send('Hello, CS 262 Monopoly service (extended)!');
  }
  
- // CRUD operations for Player
+ // Player CRUD
  function readPlayers(req, res, next) {
    db.many('SELECT * FROM player')
      .then((data) => res.send(data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error('Error reading players:', err);
+       next(err);
+     });
  }
  
  function readPlayer(req, res, next) {
    db.oneOrNone('SELECT * FROM player WHERE id=${id}', req.params)
      .then((data) => returnDataOr404(res, data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error(`Error reading player with id ${req.params.id}:`, err);
+       next(err);
+     });
  }
  
  function updatePlayer(req, res, next) {
@@ -84,56 +92,83 @@
      }
    )
      .then((data) => returnDataOr404(res, data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error(`Error updating player with id ${req.params.id}:`, err);
+       next(err);
+     });
  }
  
  function createPlayer(req, res, next) {
    db.one('INSERT INTO player(email, name) VALUES (${email}, ${name}) RETURNING id', req.body)
      .then((data) => res.send(data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error('Error creating player:', err);
+       next(err);
+     });
  }
  
  function deletePlayer(req, res, next) {
    db.oneOrNone('DELETE FROM player WHERE id=${id} RETURNING id', req.params)
      .then((data) => returnDataOr404(res, data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error(`Error deleting player with id ${req.params.id}:`, err);
+       next(err);
+     });
  }
  
- // Additional operations for Game, PlayerGame, PlayerStatus, and PlayerProperty
+ // Additional Handlers
  function readGames(req, res, next) {
    db.many('SELECT * FROM game ORDER BY time DESC')
      .then((data) => res.send(data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error('Error reading games:', err);
+       next(err);
+     });
  }
  
  function readGame(req, res, next) {
    db.oneOrNone('SELECT * FROM game WHERE id=${id}', req.params)
      .then((data) => returnDataOr404(res, data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error(`Error reading game with id ${req.params.id}:`, err);
+       next(err);
+     });
  }
  
  function readPlayerGameScores(req, res, next) {
    db.manyOrNone('SELECT * FROM playergame WHERE playerID=${id}', req.params)
      .then((data) => res.send(data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error(`Error reading player game scores for id ${req.params.id}:`, err);
+       next(err);
+     });
  }
  
  function readPlayerStatus(req, res, next) {
    db.oneOrNone('SELECT * FROM playerstatus WHERE playerID=${id}', req.params)
      .then((data) => returnDataOr404(res, data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error(`Error reading player status for id ${req.params.id}:`, err);
+       next(err);
+     });
  }
  
  function readPlayerProperties(req, res, next) {
    db.manyOrNone('SELECT * FROM playerproperty WHERE playerID=${id}', req.params)
      .then((data) => res.send(data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error(`Error reading player properties for id ${req.params.id}:`, err);
+       next(err);
+     });
  }
  
  function readAllPlayerProperties(req, res, next) {
    db.manyOrNone('SELECT * FROM playerproperty')
      .then((data) => res.send(data))
-     .catch((err) => next(err));
+     .catch((err) => {
+       console.error('Error reading all player properties:', err);
+       next(err);
+     });
  }
  
  module.exports = app;
