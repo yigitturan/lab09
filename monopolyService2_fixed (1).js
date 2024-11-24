@@ -43,6 +43,7 @@
  router.get('/games/:id', readGame);
  router.get('/playergame/:id', readPlayerGameScores);
  router.get('/playerstatus/:id', readPlayerStatus);
+ router.get('/playerproperties', readAllPlayerProperties);
  router.get('/playerproperties/:id', readPlayerProperties);
  
  app.use(router);
@@ -62,20 +63,20 @@
  
  // CRUD operations for Player
  function readPlayers(req, res, next) {
-   db.many('SELECT * FROM "Player"')
+   db.many('SELECT * FROM player')
      .then((data) => res.send(data))
      .catch((err) => next(err));
  }
  
  function readPlayer(req, res, next) {
-   db.oneOrNone('SELECT * FROM "Player" WHERE id=${id}', req.params)
+   db.oneOrNone('SELECT * FROM player WHERE id=${id}', req.params)
      .then((data) => returnDataOr404(res, data))
      .catch((err) => next(err));
  }
  
  function updatePlayer(req, res, next) {
    db.oneOrNone(
-     'UPDATE "Player" SET email=${email}, name=${name} WHERE id=${id} RETURNING id',
+     'UPDATE player SET email=${email}, name=${name} WHERE id=${id} RETURNING id',
      {
        id: req.params.id,
        email: req.body.email,
@@ -87,47 +88,53 @@
  }
  
  function createPlayer(req, res, next) {
-   db.one('INSERT INTO "Player"(email, name) VALUES (${email}, ${name}) RETURNING id', req.body)
+   db.one('INSERT INTO player(email, name) VALUES (${email}, ${name}) RETURNING id', req.body)
      .then((data) => res.send(data))
      .catch((err) => next(err));
  }
  
  function deletePlayer(req, res, next) {
-   db.oneOrNone('DELETE FROM "Player" WHERE id=${id} RETURNING id', req.params)
+   db.oneOrNone('DELETE FROM player WHERE id=${id} RETURNING id', req.params)
      .then((data) => returnDataOr404(res, data))
      .catch((err) => next(err));
  }
  
  // Additional operations for Game, PlayerGame, PlayerStatus, and PlayerProperty
  function readGames(req, res, next) {
-   db.many('SELECT * FROM "Game" ORDER BY time DESC')
+   db.many('SELECT * FROM game ORDER BY time DESC')
      .then((data) => res.send(data))
      .catch((err) => next(err));
  }
  
  function readGame(req, res, next) {
-   db.oneOrNone('SELECT * FROM "Game" WHERE id=${id}', req.params)
+   db.oneOrNone('SELECT * FROM game WHERE id=${id}', req.params)
      .then((data) => returnDataOr404(res, data))
      .catch((err) => next(err));
  }
  
  function readPlayerGameScores(req, res, next) {
-   db.manyOrNone('SELECT * FROM "PlayerGame" WHERE playerID=${id}', req.params)
+   db.manyOrNone('SELECT * FROM playergame WHERE playerID=${id}', req.params)
      .then((data) => res.send(data))
      .catch((err) => next(err));
  }
  
  function readPlayerStatus(req, res, next) {
-   db.oneOrNone('SELECT * FROM "PlayerStatus" WHERE playerID=${id}', req.params)
+   db.oneOrNone('SELECT * FROM playerstatus WHERE playerID=${id}', req.params)
      .then((data) => returnDataOr404(res, data))
      .catch((err) => next(err));
  }
  
  function readPlayerProperties(req, res, next) {
-  db.manyOrNone('SELECT * FROM playerproperties WHERE playerID=${id}', req.params)
-    .then((data) => res.send(data))
-    .catch((err) => next(err));
-}
-
+   db.manyOrNone('SELECT * FROM playerproperty WHERE playerID=${id}', req.params)
+     .then((data) => res.send(data))
+     .catch((err) => next(err));
+ }
+ 
+ function readAllPlayerProperties(req, res, next) {
+   db.manyOrNone('SELECT * FROM playerproperty')
+     .then((data) => res.send(data))
+     .catch((err) => next(err));
+ }
+ 
  module.exports = app;
  
