@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 /* eslint-disable no-console */
-/* eslint-disable no-use-before-define */
+/* eslint-disable no-use-before-define a */
 
 /**
  * This module implements an extended REST-inspired webservice for the Monopoly DB.
