@@ -12,3 +12,5 @@ SELECT playerID FROM PlayerGame WHERE score > 2000;
 
 -- Retrieve a list of players with Gmail accounts.
 SELECT * FROM Player WHERE emailAddress LIKE '%@gmail.com';
+
+SELECT * FROM playerproperties;
