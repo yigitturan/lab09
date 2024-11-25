@@ -3,10 +3,10 @@
 /* eslint-disable no-use-before-define */
 
 /**
- * This module implements an extended REST-inspired webservice for the Monopoly DB.
+ * This module implements an extended REST-inspired web service for the Monopoly DB.
  * The database is hosted on Azure PostgreSQL.
  *
- * This service now supports multiple tables: Player, Game, PlayerGame, Property, PlayerProperty, and PlayerStatus.
+ * This service supports multiple tables: Player, Game, PlayerGame, Property, PlayerProperty, and PlayerStatus.
  *
  * Security measures are in place to prevent SQL injection via pg-promise's variable escaping.
  *
@@ -14,7 +14,6 @@
  * See the DB_* variables used by pg-promise. Setting NODE_ENV to production will cause ExpressJS to serve
  * up uninformative server error responses for all errors.
  */
-
 
  const pgp = require('pg-promise')();
  const express = require('express');
@@ -29,25 +28,26 @@
  
  const app = express();
  const port = process.env.PORT || 3000;
- const router = express.Router();
- router.use(express.json());
+ 
+ // Middleware to parse JSON bodies
+ app.use(express.json());
  
  // Routes
- router.get('/', readHelloMessage);
- router.get('/players', readPlayers);
- router.get('/players/:id', readPlayer);
- router.put('/players/:id', updatePlayer);
- router.post('/players', createPlayer);
- router.delete('/players/:id', deletePlayer);
+ app.get('/', readHelloMessage);
+ app.get('/players', readPlayers);
+ app.get('/players/:id', readPlayer);
+ app.put('/players/:id', updatePlayer);
+ app.post('/players', createPlayer);
+ app.delete('/players/:id', deletePlayer);
  
- router.get('/games', readGames);
- router.get('/games/:id', readGame);
- router.get('/playergame/:id', readPlayerGameScores);
- router.get('/playerstatus/:id', readPlayerStatus);
- router.get('/playerproperties', readAllPlayerProperties);
- router.get('/playerproperties/:id', readPlayerProperties);
+ app.get('/games', readGames);
+ app.get('/games/:id', readGame);
+ app.get('/playergame/:id', readPlayerGameScores);
+ app.get('/playerstatus/:id', readPlayerStatus);
+ app.get('/playerproperties', readAllPlayerProperties);
+ app.get('/playerproperties/:id', readPlayerProperties);
  
- app.use(router);
+ // Start the server
  app.listen(port, () => console.log(`Listening on port ${port}`));
  
  // Utility function for consistent responses
@@ -119,18 +119,17 @@
  
  // Additional Handlers
  function readGames(req, res, next) {
-  console.log('Request received at /games');
-  db.many('SELECT * FROM game ORDER BY time DESC')
-    .then((data) => {
-      console.log('Query result:', data);
-      res.send(data);
-    })
-    .catch((err) => {
-      console.error('Error reading games:', err);
-      next(err);
-    });
-}
-
+   console.log('Request received at /games');
+   db.many('SELECT * FROM game ORDER BY time DESC')
+     .then((data) => {
+       console.log('Query result:', data);
+       res.send(data);
+     })
+     .catch((err) => {
+       console.error('Error reading games:', err);
+       next(err);
+     });
+ }
  
  function readGame(req, res, next) {
    db.oneOrNone('SELECT * FROM game WHERE id=${id}', req.params)
@@ -168,14 +167,7 @@
      });
  }
  
- function readAllPlayerProperties(req, res, next) {
-   db.manyOrNone('SELECT * FROM playerproperty')
-     .then((data) => res.send(data))
-     .catch((err) => {
-       console.error('Error reading all player properties:', err);
-       next(err);
-     });
- }
  
- module.exports = app;
+ ::contentReference[oaicite:0]{index=0}
+  
  
