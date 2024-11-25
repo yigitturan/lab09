@@ -15,6 +15,7 @@
  * up uninformative server error responses for all errors.
  */
 
+
  const pgp = require('pg-promise')();
  const express = require('express');
  
@@ -118,13 +119,18 @@
  
  // Additional Handlers
  function readGames(req, res, next) {
-   db.many('SELECT * FROM game ORDER BY time DESC')
-     .then((data) => res.send(data))
-     .catch((err) => {
-       console.error('Error reading games:', err);
-       next(err);
-     });
- }
+  console.log('Request received at /games');
+  db.many('SELECT * FROM game ORDER BY time DESC')
+    .then((data) => {
+      console.log('Query result:', data);
+      res.send(data);
+    })
+    .catch((err) => {
+      console.error('Error reading games:', err);
+      next(err);
+    });
+}
+
  
  function readGame(req, res, next) {
    db.oneOrNone('SELECT * FROM game WHERE id=${id}', req.params)
